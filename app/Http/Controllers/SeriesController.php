@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Http\Requests\SeriesFormRequest;
 use App\Serie;
 use Illuminate\Http\Request;
 
@@ -9,16 +10,33 @@ class SeriesController {
 		return view('series.create');
 	}
 
-	public function index() {
+	public function destroy(Request $request) {
+		Serie::destroy($request->id);
 
-		$series = Serie::all();
+		$request->session()
+			->flash(
+				'mensagem',
+				"Série removida com sucesso"
+			);
+
+		return redirect()->route('listar_series');
+	}
+
+	public function index(Request $request) {
+
+		$series = Serie::query()
+			->orderBy('nome')
+			->get();
+
+		$mensagem = $request->session()->get('mensagem');
 
 		return view('series.index', [
 			'series' => $series,
+			'mensagem' => $mensagem,
 		]);
 	}
 
-	public function store(Request $request) {
+	public function store(SeriesFormRequest $request) {
 		//$nome = $request->nome;
 		//$nome = $request->get('nome');
 
@@ -29,7 +47,19 @@ class SeriesController {
 			        'nome' => $nome,
 		*/
 
-		Serie::create($request->all());
+		$serie = Serie::create($request->all());
+		$request->session()
+			->flash(
+				'mensagem',
+				"Série {$serie->id} criada com sucesso {$serie->nome}"
+			);
+
+		/*$request->session()
+			        ->put(
+			        'mensagem',
+			        "Série {$serie->id} criada com sucesso {$serie->nome}"
+		*/
+		return redirect('/series');
 	}
 }
 
