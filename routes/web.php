@@ -15,6 +15,7 @@ Route::get('/', function () {
 	return view('welcome');
 });
 
-Route::get('/ola', function () {
-	echo "ola";
-});
+Route::get('/series', 'SeriesController@index');
+Route::get('/series/criar', 'SeriesController@create');
+
+Route::resource('/teste', 'TesteController');
